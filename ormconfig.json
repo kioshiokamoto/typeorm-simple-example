@@ -5,7 +5,7 @@
    "username": "kioshi",
    "password": "root",
    "database": "typeorm_tutorial",
-   "synchronize": true,
+   "synchronize": false,
    "logging": false,
    "entities": [
       "src/entity/**/*.ts"

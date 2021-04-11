@@ -1,8 +1,9 @@
 import 'reflect-metadata';
 import { createConnection } from 'typeorm';
 import express, { Request, Response } from 'express';
-
+import {validate} from 'class-validator'
 import { User } from './entity/User';
+import { Post } from './entity/Post';
 
 const app = express();
 app.use(express.json());
@@ -12,7 +13,8 @@ app.post('/users', async (req: Request, res: Response) => {
 	const { name, email, role } = req.body;
 	try {
 		const user = User.create({ name, email, role });
-
+        const errors = await validate(user);
+        if(errors.length>0) throw errors
 		await user.save();
 
 		return res.status(201).json(user);
@@ -24,7 +26,7 @@ app.post('/users', async (req: Request, res: Response) => {
 //READ
 app.get('/users', async (_: Request, res: Response) => {
 	try {
-		const users = await User.find();
+		const users = await User.find({relations:['posts']});
 
 		return res.status(200).json(users);
 	} catch (error) {
@@ -79,6 +81,40 @@ app.get('/users/:uuid', async (req: Request, res: Response) => {
 		res.status(500).json({ error: 'User not found' });
 	}
 });
+
+//CREATE A POST
+app.post('/posts', async(req: Request, res: Response) =>{
+    const {userUuid, title, body} = req.body;
+    try {
+        const user = await User.findOneOrFail({uuid: userUuid})
+        const post = new Post({title,body, user}) 
+
+        await post.save();
+
+        return res.json(post)
+    } catch (error) {
+        console.log(error);
+		res.status(500).json({ error: 'Something went wrong' });
+    }
+
+} )
+
+//READ A POST
+app.get('/posts', async(req: Request, res: Response) =>{
+    
+
+    try {
+        const posts = await Post.find({relations:['user']})
+
+
+        return res.json(posts)
+    } catch (error) {
+        console.log(error);
+		res.status(500).json({ error: 'Something went wrong' });
+    }
+
+} )
+
 
 createConnection()
 	.then(async () => {
