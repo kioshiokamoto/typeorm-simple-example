@@ -5,16 +5,19 @@
    "username": "kioshi",
    "password": "root",
    "database": "typeorm_tutorial",
-   "synchronize": false,
+   "synchronize": true,
    "logging": false,
    "entities": [
-      "src/entity/**/*.ts"
+      "src/entity/**/*.ts",
+      "./entity/**/*.js"
    ],
    "migrations": [
-      "src/migration/**/*.ts"
+      "src/migration/**/*.ts",
+      "./migration/**/*.js"
    ],
    "subscribers": [
-      "src/subscriber/**/*.ts"
+      "src/subscriber/**/*.ts",
+      "./subscriber/**/*.js"
    ],
    "cli": {
       "entitiesDir": "src/entity",
